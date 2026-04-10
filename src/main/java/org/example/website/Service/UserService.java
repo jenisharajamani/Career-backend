@@ -14,15 +14,25 @@ public class UserService {
     @Autowired
     private CareerRepository careerRepository;
 
+    // ✅ FIXED SAVE METHOD
     public Career saveUser(Career career) {
-        return null;
+
+        // ✅ set audit fields
+        career.setCreatedDate(new Date());
+        career.setUpdatedDate(new Date());
+        career.setCreatedBy("USER"); // you can change later
+        career.setUpdatedBy("USER");
+
+        System.out.println("Saving to DB: " + career.getName()); // debug log
+
+        return careerRepository.save(career); // ✅ IMPORTANT
     }
 
     public List<Career> getAllCareers() {
         return careerRepository.findAll();
     }
 
-    // ✅ 👉 ADD THIS METHOD
+    // ✅ GET BY ID
     public Career getById(Long id) {
         return careerRepository.findById(id).orElse(null);
     }
@@ -34,6 +44,7 @@ public class UserService {
     public void deleteUser(Long id) {
         careerRepository.deleteById(id);
     }
+
     public Career updateUser(Long id, String updatedBy) {
 
         Career existing = careerRepository.findById(id).orElse(null);
@@ -47,19 +58,18 @@ public class UserService {
 
         return null;
     }
+
     public Career updateFullUser(Long id, Career request) {
 
         Career career = careerRepository.findById(id).orElse(null);
 
         if (career != null) {
 
-            // ✅ update fields from frontend
-            // ✅ update name
+            // ✅ update fields
             if (request.getName() != null && !request.getName().isEmpty()) {
                 career.setName(request.getName());
             }
 
-            // ✅ update degree
             if (request.getDegree() != null && !request.getDegree().isEmpty()) {
                 career.setDegree(request.getDegree());
             }
@@ -68,7 +78,7 @@ public class UserService {
                 career.setExperienceYears(request.getExperienceYears());
             }
 
-            // ✅ audit fields
+            // ✅ audit
             career.setUpdatedBy(request.getUpdatedBy());
             career.setUpdatedDate(new Date());
 

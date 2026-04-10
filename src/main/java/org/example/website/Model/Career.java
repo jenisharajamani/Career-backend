@@ -1,5 +1,6 @@
 package org.example.website.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.util.Date;
 
@@ -13,6 +14,8 @@ public class Career {
 
     private String name;
 
+    // ✅ FIXED (IMPORTANT)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.DATE)
     private Date dob;
 
@@ -32,11 +35,14 @@ public class Career {
     private String previousCompany;
 
     // ✅ NEW FIELDS
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+    // ✅ ADDED (missing field)
     private String createdBy;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDate;
 
@@ -79,7 +85,7 @@ public class Career {
     public String getPreviousCompany() { return previousCompany; }
     public void setPreviousCompany(String previousCompany) { this.previousCompany = previousCompany; }
 
-    // ✅ NEW GETTERS & SETTERS
+    // NEW GETTERS & SETTERS
 
     public Date getCreatedDate() { return createdDate; }
     public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
