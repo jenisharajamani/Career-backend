@@ -4,6 +4,8 @@ import org.example.website.Model.Career;
 import org.example.website.Repository.CareerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Date;
 import java.util.List;
@@ -20,12 +22,18 @@ public class UserService {
         // ✅ set audit fields
         career.setCreatedDate(new Date());
         career.setUpdatedDate(new Date());
-        career.setCreatedBy("USER"); // you can change later
-        career.setUpdatedBy("USER");
+
+        if (career.getCreatedBy() == null) {
+            career.setCreatedBy("USER");
+        }
+
+        if (career.getUpdatedBy() == null) {
+            career.setUpdatedBy("USER");
+        }
 
         System.out.println("Saving to DB: " + career.getName()); // debug log
 
-        return careerRepository.save(career); // ✅ IMPORTANT
+        return careerRepository.save(career);
     }
 
     public List<Career> getAllCareers() {
@@ -65,7 +73,7 @@ public class UserService {
 
         if (career != null) {
 
-            // ✅ update fields
+            // ✅ update fields safely
             if (request.getName() != null && !request.getName().isEmpty()) {
                 career.setName(request.getName());
             }
@@ -79,12 +87,20 @@ public class UserService {
             }
 
             // ✅ audit
-            career.setUpdatedBy(request.getUpdatedBy());
+            if (request.getUpdatedBy() != null) {
+                career.setUpdatedBy(request.getUpdatedBy());
+            }
+
             career.setUpdatedDate(new Date());
 
             return careerRepository.save(career);
         }
 
         return null;
+    }
+
+    // ✅ PAGINATION
+    public Page<Career> getPaginatedUsers(int page, int size) {
+        return careerRepository.findAll(PageRequest.of(page, size));
     }
 }

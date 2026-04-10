@@ -57,7 +57,7 @@ public class careerController {
         return ResponseEntity.ok("Deleted successfully");
     }
 
-    // ✅ UPDATE API
+    // ✅ UPDATE API (FIXED)
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long id,
@@ -68,8 +68,23 @@ public class careerController {
 
         Career updated = userService.updateFullUser(id, request);
 
+        if (updated == null) {
+            System.out.println("❌ USER NOT FOUND");
+            return ResponseEntity.badRequest().body("User not found");
+        }
+
         System.out.println("✅ UPDATE SUCCESSFUL FOR: " + updated.getName());
 
         return ResponseEntity.ok(updated);
+    }
+
+    // ✅ PAGINATION API
+    @GetMapping("/paginated")
+    public ResponseEntity<?> getPaginatedUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        System.out.println("===== PAGINATION API CALLED ===== Page: " + page);
+        return ResponseEntity.ok(userService.getPaginatedUsers(page, size));
     }
 }
