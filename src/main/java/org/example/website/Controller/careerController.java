@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/career")
@@ -21,44 +20,55 @@ public class careerController {
     @PostMapping("/saveCareer")
     public ResponseEntity<?> saveCareer(@RequestBody Career career) {
 
+        System.out.println("===== SAVE API CALLED =====");
+        System.out.println("Incoming Data: " + career.getName() + " | " + career.getDob());
+
         boolean exists = userService.existsByNameAndDob(
                 career.getName(),
                 career.getDob()
         );
 
         if (exists) {
+            System.out.println("❌ DUPLICATE ENTRY FOUND");
             return ResponseEntity
                     .badRequest()
                     .body("You've already submitted the form");
         }
 
         Career saved = userService.saveUser(career);
+
+        System.out.println("✅ DATA SAVED SUCCESSFULLY: " + saved.getName());
+
         return ResponseEntity.ok(saved);
     }
 
     // ✅ GET ALL DATA
     @GetMapping("/all")
     public List<Career> getAllUsers() {
+        System.out.println("===== FETCH ALL USERS API CALLED =====");
         return userService.getAllCareers();
     }
 
     // ✅ DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        System.out.println("===== DELETE API CALLED FOR ID: " + id + " =====");
         userService.deleteUser(id);
         return ResponseEntity.ok("Deleted successfully");
     }
 
-    // ✅ ✅ FIXED UPDATE API
-
+    // ✅ UPDATE API
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long id,
             @RequestBody Career request) {
 
         System.out.println("===== UPDATE API CALLED =====");
+        System.out.println("Updating ID: " + id);
 
         Career updated = userService.updateFullUser(id, request);
+
+        System.out.println("✅ UPDATE SUCCESSFUL FOR: " + updated.getName());
 
         return ResponseEntity.ok(updated);
     }
