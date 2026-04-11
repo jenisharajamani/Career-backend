@@ -17,10 +17,8 @@ public class UserService {
     @Autowired
     private CareerRepository careerRepository;
 
-    // ✅ FIXED SAVE METHOD
     public Career saveUser(Career career) {
 
-        // ✅ set audit fields
         career.setCreatedDate(LocalDateTime.now());
         career.setUpdatedDate(LocalDateTime.now());
 
@@ -41,12 +39,10 @@ public class UserService {
         return careerRepository.findAll();
     }
 
-    // ✅ GET BY ID
     public Career getById(Long id) {
         return careerRepository.findById(id).orElse(null);
     }
 
-    // ✅ FIXED TYPE
     public boolean existsByNameAndDob(String name, LocalDate dob) {
         return careerRepository.existsByNameAndDob(name, dob);
     }
@@ -75,7 +71,6 @@ public class UserService {
 
         if (career != null) {
 
-            // ✅ update fields safely
             if (request.getName() != null && !request.getName().isEmpty()) {
                 career.setName(request.getName());
             }
@@ -84,11 +79,9 @@ public class UserService {
                 career.setDegree(request.getDegree());
             }
 
-            if (request.getExperienceYears() != 0) {
-                career.setExperienceYears(request.getExperienceYears());
-            }
+            // ✅ FIXED (important improvement)
+            career.setExperienceYears(request.getExperienceYears());
 
-            // ✅ audit
             if (request.getUpdatedBy() != null) {
                 career.setUpdatedBy(request.getUpdatedBy());
             }
@@ -101,7 +94,6 @@ public class UserService {
         return null;
     }
 
-    // ✅ PAGINATION
     public Page<Career> getPaginatedUsers(int page, int size) {
         return careerRepository.findAll(PageRequest.of(page, size));
     }
