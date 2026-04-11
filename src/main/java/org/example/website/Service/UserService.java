@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,8 +21,8 @@ public class UserService {
     public Career saveUser(Career career) {
 
         // ✅ set audit fields
-        career.setCreatedDate(new Date());
-        career.setUpdatedDate(new Date());
+        career.setCreatedDate(LocalDateTime.now());
+        career.setUpdatedDate(LocalDateTime.now());
 
         if (career.getCreatedBy() == null) {
             career.setCreatedBy("USER");
@@ -31,7 +32,7 @@ public class UserService {
             career.setUpdatedBy("USER");
         }
 
-        System.out.println("Saving to DB: " + career.getName()); // debug log
+        System.out.println("Saving to DB: " + career.getName());
 
         return careerRepository.save(career);
     }
@@ -45,7 +46,8 @@ public class UserService {
         return careerRepository.findById(id).orElse(null);
     }
 
-    public boolean existsByNameAndDob(String name, Date dob) {
+    // ✅ FIXED TYPE
+    public boolean existsByNameAndDob(String name, LocalDate dob) {
         return careerRepository.existsByNameAndDob(name, dob);
     }
 
@@ -59,7 +61,7 @@ public class UserService {
 
         if (existing != null) {
             existing.setUpdatedBy(updatedBy);
-            existing.setUpdatedDate(new Date());
+            existing.setUpdatedDate(LocalDateTime.now());
 
             return careerRepository.save(existing);
         }
@@ -91,7 +93,7 @@ public class UserService {
                 career.setUpdatedBy(request.getUpdatedBy());
             }
 
-            career.setUpdatedDate(new Date());
+            career.setUpdatedDate(LocalDateTime.now());
 
             return careerRepository.save(career);
         }

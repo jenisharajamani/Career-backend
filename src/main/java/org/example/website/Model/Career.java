@@ -2,7 +2,8 @@ package org.example.website.Model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -14,10 +15,9 @@ public class Career {
 
     private String name;
 
-    // ✅ FIXED (IMPORTANT)
+    // ✅ FIXED
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
-    private Date dob;
+    private LocalDate dob;
 
     private int age;
     private String degree;
@@ -34,17 +34,15 @@ public class Career {
     private int experienceYears;
     private String previousCompany;
 
-    // ✅ NEW FIELDS
+    // ✅ FIXED
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
-    // ✅ ADDED (missing field)
     private String createdBy;
 
+    // ✅ FIXED
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedDate;
+    private LocalDateTime updatedDate;
 
     private String updatedBy;
 
@@ -55,8 +53,8 @@ public class Career {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public Date getDob() { return dob; }
-    public void setDob(Date dob) { this.dob = dob; }
+    public LocalDate getDob() { return dob; }
+    public void setDob(LocalDate dob) { this.dob = dob; }
 
     public int getAge() { return age; }
     public void setAge(int age) { this.age = age; }
@@ -85,16 +83,14 @@ public class Career {
     public String getPreviousCompany() { return previousCompany; }
     public void setPreviousCompany(String previousCompany) { this.previousCompany = previousCompany; }
 
-    // NEW GETTERS & SETTERS
-
-    public Date getCreatedDate() { return createdDate; }
-    public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
+    public LocalDateTime getCreatedDate() { return createdDate; }
+    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
 
     public String getCreatedBy() { return createdBy; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
 
-    public Date getUpdatedDate() { return updatedDate; }
-    public void setUpdatedDate(Date updatedDate) { this.updatedDate = updatedDate; }
+    public LocalDateTime getUpdatedDate() { return updatedDate; }
+    public void setUpdatedDate(LocalDateTime updatedDate) { this.updatedDate = updatedDate; }
 
     public String getUpdatedBy() { return updatedBy; }
     public void setUpdatedBy(String updatedBy) { this.updatedBy = updatedBy; }
