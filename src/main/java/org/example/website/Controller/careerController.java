@@ -16,30 +16,42 @@ public class careerController {
     @Autowired
     private UserService userService;
 
-    // ✅ SAVE WITH DUPLICATE CHECK
+    // ✅ SAVE WITH DUPLICATE CHECK + ERROR HANDLING
     @PostMapping("/saveCareer")
     public ResponseEntity<?> saveCareer(@RequestBody Career career) {
 
         System.out.println("===== SAVE API CALLED =====");
         System.out.println("Incoming Data: " + career.getName() + " | " + career.getDob());
 
-        boolean exists = userService.existsByNameAndDob(
-                career.getName(),
-                career.getDob()
-        );
+        try {
 
-        if (exists) {
-            System.out.println("❌ DUPLICATE ENTRY FOUND");
+            boolean exists = userService.existsByNameAndDob(
+                    career.getName(),
+                    career.getDob()
+            );
+
+            if (exists) {
+                System.out.println("❌ DUPLICATE ENTRY FOUND");
+                return ResponseEntity
+                        .badRequest()
+                        .body("You've already submitted the form");
+            }
+
+            Career saved = userService.saveUser(career);
+
+            System.out.println("✅ DATA SAVED SUCCESSFULLY: " + saved.getName());
+
+            return ResponseEntity.ok(saved);
+
+        } catch (Exception e) {
+
+            System.out.println("🔥 ERROR OCCURRED:");
+            e.printStackTrace(); // 👈 IMPORTANT (shows error in logs)
+
             return ResponseEntity
-                    .badRequest()
-                    .body("You've already submitted the form");
+                    .status(500)
+                    .body("ERROR: " + e.getMessage());
         }
-
-        Career saved = userService.saveUser(career);
-
-        System.out.println("✅ DATA SAVED SUCCESSFULLY: " + saved.getName());
-
-        return ResponseEntity.ok(saved);
     }
 
     // ✅ GET ALL DATA
@@ -53,11 +65,17 @@ public class careerController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         System.out.println("===== DELETE API CALLED FOR ID: " + id + " =====");
-        userService.deleteUser(id);
-        return ResponseEntity.ok("Deleted successfully");
+
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok("Deleted successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error deleting user: " + e.getMessage());
+        }
     }
 
-    // ✅ UPDATE API (FIXED)
+    // ✅ UPDATE API (WITH ERROR HANDLING)
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long id,
@@ -66,16 +84,23 @@ public class careerController {
         System.out.println("===== UPDATE API CALLED =====");
         System.out.println("Updating ID: " + id);
 
-        Career updated = userService.updateFullUser(id, request);
+        try {
 
-        if (updated == null) {
-            System.out.println("❌ USER NOT FOUND");
-            return ResponseEntity.badRequest().body("User not found");
+            Career updated = userService.updateFullUser(id, request);
+
+            if (updated == null) {
+                System.out.println("❌ USER NOT FOUND");
+                return ResponseEntity.badRequest().body("User not found");
+            }
+
+            System.out.println("✅ UPDATE SUCCESSFUL FOR: " + updated.getName());
+
+            return ResponseEntity.ok(updated);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error updating user: " + e.getMessage());
         }
-
-        System.out.println("✅ UPDATE SUCCESSFUL FOR: " + updated.getName());
-
-        return ResponseEntity.ok(updated);
     }
 
     // ✅ PAGINATION API
@@ -85,6 +110,12 @@ public class careerController {
             @RequestParam(defaultValue = "5") int size
     ) {
         System.out.println("===== PAGINATION API CALLED ===== Page: " + page);
-        return ResponseEntity.ok(userService.getPaginatedUsers(page, size));
+
+        try {
+            return ResponseEntity.ok(userService.getPaginatedUsers(page, size));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error fetching data: " + e.getMessage());
+        }
     }
 }
